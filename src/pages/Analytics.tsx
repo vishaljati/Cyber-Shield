@@ -1,5 +1,5 @@
 import { Layout } from "@/components/Layout";
-import { Header } from "@/components/Header";
+import { Header } from "@/components/Dashboard/Header";
 import { StatCard } from "@/components/StatCard";
 import { Shield, TrendingUp, Clock, Zap } from "lucide-react";
 import {

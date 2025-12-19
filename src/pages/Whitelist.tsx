@@ -1,5 +1,5 @@
 import { Layout } from "@/components/Layout";
-import { Header } from "@/components/Header";
+import { Header } from "@/components/Dashboard/Header";
 import { WhitelistManager } from "@/components/WhitelistManager";
 import { Shield, AlertTriangle } from "lucide-react";
 

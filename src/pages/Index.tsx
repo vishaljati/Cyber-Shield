@@ -1,5 +1,5 @@
 import { Layout } from "@/components/Layout";
-import { Header } from "@/components/Header";
+import { Header } from "@/components/Dashboard/Header";
 import { Dashboard } from "@/components/Dashboard/Dashboard";
 
 const Index = () => {

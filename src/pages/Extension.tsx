@@ -1,5 +1,5 @@
 import { Layout } from "@/components/Layout";
-import { Header } from "@/components/Header";
+import { Header } from "@/components/Dashboard/Header";
 import { ExtensionPopup } from "@/components/ExtensionPopup";
 import { Download, Chrome, Globe, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
