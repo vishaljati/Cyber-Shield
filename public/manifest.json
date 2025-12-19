@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "Titan Shield",
+  "short_name": "TitanShield",
+  "version": "1.0.0",
+  "description": "Advanced security protection for your browser",
+  "author": "Titan Security Team",
+  "icons": {
+    "16": "icon16.png",
+    "32": "icon32.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "32": "icon32.png",
+      "48": "icon48.png"
+    },
+    "default_title": "Titan Shield"
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "webNavigation"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/*"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "homepage_url": "https://titanshield.example.com",
+  "offline_enabled": true,
+  "incognito": "split"
+}
