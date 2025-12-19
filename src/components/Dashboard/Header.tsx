@@ -11,6 +11,7 @@ interface HeaderProps {
 }
 
 const LoginForm = ({ onClose }: { onClose: () => void }) => {
+  const [isSignUp, setIsSignUp] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -29,7 +30,7 @@ const LoginForm = ({ onClose }: { onClose: () => void }) => {
       return;
     }
     
-    console.log('Login submitted:', { username });
+    console.log(isSignUp ? 'Sign up' : 'Login', 'submitted:', { username });
     onClose();
   };
 
@@ -45,8 +46,10 @@ const LoginForm = ({ onClose }: { onClose: () => void }) => {
         </button>
         
         <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold">Welcome Back</h2>
-          <p className="text-muted-foreground text-sm mt-1">Enter your credentials to access your account</p>
+          <h2 className="text-2xl font-bold">Welcome to CyberShield</h2>
+          <p className="text-muted-foreground text-sm mt-1">
+            {isSignUp ? 'Create your account' : 'Sign in to your account'}
+          </p>
         </div>
         
         {error && (
@@ -56,52 +59,73 @@ const LoginForm = ({ onClose }: { onClose: () => void }) => {
         )}
         
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="username">Username</Label>
-            <Input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => {
-                setUsername(e.target.value);
-                if (error) setError('');
-              }}
-              placeholder="Enter your username"
-              required
-              className="w-full"
-              autoComplete="username"
-            />
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                  if (error) setError('');
+                }}
+                placeholder="Enter your username"
+                required
+                className="w-full"
+                autoComplete="username"
+              />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+                {!isSignUp && (
+                  <button 
+                    type="button" 
+                    className="text-xs text-muted-foreground hover:text-foreground"
+                    onClick={() => console.log('Forgot password clicked')}
+                  >
+                    Forgot password?
+                  </button>
+                )}
+              </div>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (error) setError('');
+                }}
+                placeholder="Enter your password"
+                required
+                className="w-full"
+                autoComplete="current-password"
+              />
+            </div>
           </div>
           
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
+          <div className="space-y-4">
+            <Button type="submit" className="w-full">
+              {isSignUp ? 'Create Account' : 'Sign In'}
+            </Button>
+            
+            <div className="text-center text-sm">
+              <span className="text-muted-foreground">
+                {isSignUp ? 'Already have an account?' : "Don't have an account?"}
+              </span>{' '}
               <button 
                 type="button" 
-                className="text-xs text-muted-foreground hover:text-foreground"
-                onClick={() => console.log('Forgot password clicked')}
+                onClick={() => {
+                  setIsSignUp(!isSignUp);
+                  setError('');
+                }}
+                className="text-foreground hover:underline font-medium"
               >
-                Forgot password?
+                {isSignUp ? 'Sign in' : 'Sign up'}
               </button>
             </div>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                if (error) setError('');
-              }}
-              placeholder="Enter your password"
-              required
-              className="w-full"
-              autoComplete="current-password"
-            />
           </div>
-          
-          <Button type="submit" className="w-full mt-4">
-            Sign In
-          </Button>
         </form>
       </div>
     </div>
@@ -138,7 +162,7 @@ export const Header = ({ title, subtitle }: HeaderProps) => {
           </span>
         </Button>
 
-        {/* Login Button */}
+        {/* Login/Signup Button */}
         <Button 
           variant="outline" 
           size="sm" 
@@ -146,7 +170,7 @@ export const Header = ({ title, subtitle }: HeaderProps) => {
           onClick={() => setShowLogin(true)}
         >
           <LogIn className="w-4 h-4" />
-          <span className="hidden sm:inline">Login</span>
+          <span className="hidden sm:inline">Login / Sign Up</span>
         </Button>
 
         {/* Profile */}
@@ -154,8 +178,12 @@ export const Header = ({ title, subtitle }: HeaderProps) => {
           <User className="w-5 h-5" />
         </Button>
 
-        {/* Login Modal */}
-        {showLogin && <LoginForm onClose={() => setShowLogin(false)} />}
+        {/* Login/Signup Modal */}
+        {showLogin && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <LoginForm onClose={() => setShowLogin(false)} />
+          </div>
+        )}
       </div>
     </header>
   );
