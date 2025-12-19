@@ -38,7 +38,6 @@ export const StatCard = ({
   value,
   subtitle,
   icon: Icon,
-  trend,
   variant = "default",
   className,
 }: StatCardProps) => {
@@ -58,12 +57,7 @@ export const StatCard = ({
           {subtitle && (
             <p className="text-xs text-muted-foreground">{subtitle}</p>
           )}
-          {trend && (
-            <p className={cn("text-xs flex items-center gap-1", styles.trend)}>
-              <span>{trend.positive ? "↑" : "↓"}</span>
-              <span>{trend.value}% from last week</span>
-            </p>
-          )}
+
         </div>
         <div
           className={cn(

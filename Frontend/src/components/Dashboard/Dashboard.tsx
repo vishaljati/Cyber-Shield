@@ -16,10 +16,10 @@ interface DashboardProps {
 
 export const Dashboard = ({
   stats = {
-    trackersBlocked: "2,847",
-    sitesProtected: "156",
-    fingerprintAttempts: "89",
-    threatsDetected: "12"
+    trackersBlocked: 0,
+    sitesProtected: 0,
+    fingerprintAttempts: 0,
+    threatsDetected:0
   },
   showProtectionToggle = true,
   showTrackerFeed = true
@@ -33,21 +33,21 @@ export const Dashboard = ({
           value={stats.trackersBlocked.toString()}
           icon={Shield}
           variant="success"
-          trend={{ value: 12, positive: true }}
+         
         />
         <StatCard
           title="Sites Protected"
           value={stats.sitesProtected.toString()}
           icon={Globe}
           variant="default"
-          trend={{ value: 8, positive: true }}
+         
         />
         <StatCard
           title="Fingerprint Attempts"
           value={stats.fingerprintAttempts.toString()}
           icon={Eye}
           variant="warning"
-          trend={{ value: 23, positive: false }}
+         
         />
         <StatCard
           title="Threats Detected"

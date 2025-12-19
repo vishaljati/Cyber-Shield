@@ -42,18 +42,14 @@ const generateEvent = (): TrackerEvent => ({
 export const TrackerFeed = () => {
   const [events, setEvents] = useState<TrackerEvent[]>([]);
 
-  useEffect(() => {
-    // Initialize with some events
-    const initialEvents = Array.from({ length: 5 }, generateEvent);
-    setEvents(initialEvents);
+  // useEffect(() => {
+  //   // Initialize with some events
+  //   const initialEvents = Array.from({ length: 5 }, generateEvent);
+  //   setEvents(initialEvents);
 
-    // Add new events periodically
-    const interval = setInterval(() => {
-      setEvents((prev) => [generateEvent(), ...prev.slice(0, 9)]);
-    }, 3000);
+  //   // Add new events periodically
 
-    return () => clearInterval(interval);
-  }, []);
+  // }, []);
 
   return (
     <div className="glass rounded-xl p-6">

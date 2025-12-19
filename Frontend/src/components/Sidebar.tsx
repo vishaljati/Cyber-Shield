@@ -14,7 +14,6 @@ import {
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
   { icon: Shield, label: "Protection", path: "/protection" },
-  { icon: List, label: "Tracker Log", path: "/logs" },
   { icon: Globe, label: "Whitelist", path: "/whitelist" },
   { icon: BarChart3, label: "Analytics", path: "/analytics" },
   { icon: Puzzle, label: "Extension", path: "/extension" },
@@ -73,7 +72,7 @@ export const Sidebar = () => {
           <p className="text-xs text-muted-foreground mb-2">Protection Status</p>
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
-            <span className="text-sm font-medium text-success">Active</span>
+            <span className="text-sm font-medium text-success"></span>
           </div>
         </div>
       </div>
