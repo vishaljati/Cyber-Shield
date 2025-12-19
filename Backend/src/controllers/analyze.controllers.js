@@ -4,7 +4,7 @@ import {
   generateExplanation,
   getFallbackExplanation,
 } from '../services/ai.service.js';
-import {  mapRiskToAction } from '../utils/riskMapper.js';
+import {  mapRiskToAction } from '../utils';
 
 /**
  * Controller: Analyze Tracker
