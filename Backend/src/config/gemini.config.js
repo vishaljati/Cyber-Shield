@@ -6,13 +6,13 @@ if (!process.env.GEMINI_API_KEY) {
 }
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const DEFAULT_MODEL = "gemini-2.5-flash-lite";
+
 
 export const generateText=async(prompt)=> {
   if (!prompt) throw new Error("Prompt is required");
 
   const model = genAI.getGenerativeModel({
-    model:DEFAULT_MODEL
+    model:"gemini-2.5-flash-lite"
   });
 
   const result = await model.generateContent(prompt);

@@ -17,6 +17,6 @@ app.use(express.static('public'));
 
 import analyzeRouter from './routes/analyze.routes.js';
 
-app.use('/analyze', analyzeRouter);
+app.use('/api/v1/analyze', analyzeRouter);
 
 export default app;

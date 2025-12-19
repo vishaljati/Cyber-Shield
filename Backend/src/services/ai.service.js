@@ -1,22 +1,8 @@
-import { AsyncHandler } from '../utils/index.js';
 import { generateText } from "../config/gemini.config.js"
 
-export const generateExplanation = AsyncHandler(async ({
-    trackerDomain,
-    category,
-    signals
-}) => {
-  const prompt = buildPrompt(trackerDomain, category, signals);
-  
-  const geminiText=await generateText(prompt)
-
- return sanitizeExplanation(geminiText)
-
-})
-
 //Build a strict prompt to avoid hallucinations
-const buildPrompt=({trackerDomain, category, signals})=>{
-return `
+const buildPrompt = ({ trackerDomain, category, signals }) => {
+  return `
    You are a cybersecurity assistant.
    Explain what the tracker "${trackerDomain}" does.
    Category: ${category}
@@ -33,7 +19,7 @@ return `
 }
 
 //Ensure explanation is safe & short
-const sanitizeExplanation=(text)=> {
+const sanitizeExplanation = (text) => {
   return text
     .replace(/\n/g, " ")
     .replace(/\s+/g, " ")
@@ -41,23 +27,42 @@ const sanitizeExplanation=(text)=> {
     .slice(0, 250);
 }
 
-export const getFallbackExplanation = (category) => {
-  const fallbackMap = {
-    Necessary:
-      "This tracker is required for the website to function properly.",
-    Analytics:
-      "This tracker collects anonymous usage data to analyze website performance.",
-    Advertising:
-      "This tracker follows users across websites to deliver targeted advertisements.",
-    Suspicious:
-      "This tracker shows tracking behavior but its exact purpose is unclear.",
-  };
+export const generateExplanation = async ({ trackerDomain, category, signals }) => {
+  const prompt = buildPrompt(trackerDomain, category, signals);
 
-  return (
-    fallbackMap[category] ||
-    "This tracker performs tracking-related activity."
-  );
+  const geminiText = await generateText(prompt)
+  console.log("aiService ",geminiText);
+
+  return sanitizeExplanation(geminiText)
+
 }
+
+
+export const getFallbackExplanation = (category) => {
+
+  switch (category) {
+    case "Necessary":
+      return "This tracker is required for the website to function properly."
+
+    case "Analytics":
+      return "This tracker collects anonymous usage data to analyze website performance."
+
+    case "Advertising":
+      return "This tracker follows users across websites to deliver targeted advertisements."
+
+    case "Suspicious":
+      return "This tracker shows tracking behavior but its exact purpose is unclear."
+
+
+    default:
+      return "This tracker performs tracking-related activity."
+  }
+
+
+}
+
+
+
 
 
 

@@ -12,7 +12,7 @@ import {  mapRiskToAction } from '../utils/index.js';
  */
 const analyzeTracker = AsyncHandler(async (req, res) => {
   try {
-    const { trackerDomain, pageDomain, signals } = req.body;
+    const { trackerDomain , pageDomain , signals } = req.body;
 
     // 1️⃣ Basic input validation (minimal, MVP-safe)
     if (!trackerDomain || !pageDomain || !Array.isArray(signals)) {
@@ -35,7 +35,12 @@ const analyzeTracker = AsyncHandler(async (req, res) => {
         trackerDomain,
         category,
         signals,
-      });
+      })
+      console.log(explanation);
+      if (!explanation) {
+        throw new ApiError(500,"Generating explanation failed");
+        
+      }
     } catch (aiError) {
       // Fallback explanation if AI fails
       explanation = getFallbackExplanation(category);

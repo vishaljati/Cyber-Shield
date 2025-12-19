@@ -1,4 +1,3 @@
-import { AsyncHandler } from '../utils/index.js';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -10,12 +9,11 @@ const __dirname = path.dirname(__filename);
 const knownTrackersPath = path.join(__dirname, '../data/knownTrackers.json');
 const knownTrackers = JSON.parse(fs.readFileSync(knownTrackersPath, 'utf-8'));
 
-const classifierService = AsyncHandler(
-  async ({ trackerDomain, pageDomain, signals }) => {
+const classifierService =({ trackerDomain, pageDomain, signals }) => {
     let category = 'Suspicious';
     let risk = 'MEDIUM';
 
-    const isFirstParty = trackerDomain === pageDomain ? true : false;
+    const isFirstParty = (trackerDomain === pageDomain) ? true : false;
 
     // 1️⃣ Necessary (first-party, no tracking behavior)
     if (
@@ -61,6 +59,6 @@ const classifierService = AsyncHandler(
       risk,
     };
   }
-);
+
 
 export { classifierService };
