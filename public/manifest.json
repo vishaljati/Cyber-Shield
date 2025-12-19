@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "CyberShield",
+  "version": "1.0",
+  "description": "Detects and explains hidden trackers",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "permissions": [
+    "activeTab",
+    "storage",
+    "cookies",
+    "scripting",
+    "webRequest"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}
