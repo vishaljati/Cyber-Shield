@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import {} from '../controllers/analyze.controllers.js';
+import {analyzeTracker} from '../controllers/analyze.controllers.js';
 
 /**
  * POST /analyze-tracker
@@ -10,6 +10,6 @@ import {} from '../controllers/analyze.controllers.js';
 
 const router = Router();
 
-router.route('/analyze-tracker').post();
+router.route('/analyze-tracker').post(analyzeTracker);
 
 export default router;

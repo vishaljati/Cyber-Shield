@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { ApiError } from "../utils";
+import { ApiError } from "../utils/index.js";
 
 if (!process.env.GEMINI_API_KEY) {
   throw new Error(" GEMINI_API_KEY missing in .env");

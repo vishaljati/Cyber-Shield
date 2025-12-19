@@ -1,6 +1,10 @@
-import { AsyncHandler } from '../utils';
+import { AsyncHandler } from '../utils/index.js';
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Load known tracker domains (static, in-memory)
 const knownTrackersPath = path.join(__dirname, '../data/knownTrackers.json');

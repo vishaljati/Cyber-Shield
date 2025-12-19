@@ -1,4 +1,4 @@
-import { AsyncHandler } from '../utils';
+import { AsyncHandler } from '../utils/index.js';
 import { generateText } from "../config/gemini.config.js"
 
 export const generateExplanation = AsyncHandler(async ({
