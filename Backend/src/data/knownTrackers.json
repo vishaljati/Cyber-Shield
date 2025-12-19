@@ -1,0 +1,19 @@
+{
+  "analytics": [
+    "google-analytics.com",
+    "analytics.google.com",
+    "googletagmanager.com",
+    "clarity.ms",
+    "hotjar.com"
+  ],
+  "ads": [
+    "doubleclick.net",
+    "googleadservices.com",
+    "facebook.com",
+    "connect.facebook.net",
+    "ads.twitter.com",
+    "linkedin.com",
+    "snapchat.com",
+    "tiktok.com"
+  ]
+}
