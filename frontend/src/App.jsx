@@ -26,10 +26,6 @@ export default function App() {
 
 
 
-
-
-
-
   const blockTracker = (domain) => {
     if (!chrome?.runtime) return;
 
@@ -46,11 +42,6 @@ export default function App() {
       }
     );
   };
-
-
-
-
-
 
 
 
@@ -138,4 +129,6 @@ export default function App() {
       </div>
     </div>
   );
-}
+} 
+
+
