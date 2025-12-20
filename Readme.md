@@ -119,27 +119,9 @@ They describe *what a tracker does*, not who the user is.
 ---
 
 ## 🏗️ Backend API (Fixed Contract)
-
 **Endpoint**
 /api/v1/analyze/analyze-tracker
 
-**Request**
-```json
-{
-  "trackerDomain": "doubleclick.net",
-  "pageDomain": "example.com",
-  "signals": ["third-party", "persistent-cookie", "cross-site"]
-}
-
-**Response**
-```json
-{
-  "tracker": "doubleclick.net",
-  "category": "Advertising",
-  "risk": "HIGH",
-  "explanation": "Tracks users across websites to build advertising profiles.",
-  "action": "Block"
-}
 
 ## 🏗 System Architecture (High Level)
 
