@@ -1,19 +1,110 @@
 {
-  "analytics": [
-    "google-analytics.com",
-    "analytics.google.com",
-    "googletagmanager.com",
-    "clarity.ms",
-    "hotjar.com"
-  ],
-  "ads": [
-    "doubleclick.net",
-    "googleadservices.com",
-    "facebook.com",
-    "connect.facebook.net",
-    "ads.twitter.com",
-    "linkedin.com",
-    "snapchat.com",
-    "tiktok.com"
-  ]
+  "google-analytics.com": {
+    "category": "Analytics",
+    "risk": "MEDIUM",
+    "explanation": "Google Analytics is commonly used to track website traffic and user interactions.",
+    "action": "Ask User"
+  },
+  "www.google-analytics.com": {
+    "category": "Analytics",
+    "risk": "MEDIUM",
+    "explanation": "Google Analytics is commonly used to track website traffic and user interactions.",
+    "action": "Ask User"
+  },
+  "googletagmanager.com": {
+    "category": "Analytics",
+    "risk": "MEDIUM",
+    "explanation": "Google Tag Manager dynamically injects tracking and analytics scripts.",
+    "action": "Ask User"
+  },
+  "doubleclick.net": {
+    "category": "Advertising",
+    "risk": "HIGH",
+    "explanation": "DoubleClick is an advertising platform used for cross-site user tracking and ad targeting.",
+    "action": "Block"
+  },
+  "securepubads.g.doubleclick.net": {
+    "category": "Advertising",
+    "risk": "HIGH",
+    "explanation": "Google Ad Manager delivers targeted advertisements using cross-site tracking.",
+    "action": "Block"
+  },
+  "adsafeprotected.com": {
+    "category": "Advertising",
+    "risk": "HIGH",
+    "explanation": "AdSafe is used to verify and track ad impressions and placements.",
+    "action": "Block"
+  },
+  "scorecardresearch.com": {
+    "category": "Analytics",
+    "risk": "MEDIUM",
+    "explanation": "Scorecard Research collects audience measurement and analytics data.",
+    "action": "Ask User"
+  },
+  "quantserve.com": {
+    "category": "Analytics",
+    "risk": "MEDIUM",
+    "explanation": "Quantserve provides traffic measurement and audience analytics.",
+    "action": "Ask User"
+  },
+  "hotjar.com": {
+    "category": "Analytics",
+    "risk": "MEDIUM",
+    "explanation": "Hotjar records user behavior such as clicks and scrolls for analytics purposes.",
+    "action": "Ask User"
+  },
+  "clarity.ms": {
+    "category": "Analytics",
+    "risk": "MEDIUM",
+    "explanation": "Microsoft Clarity records user interactions for UX analytics.",
+    "action": "Ask User"
+  },
+  "facebook.net": {
+    "category": "Advertising",
+    "risk": "HIGH",
+    "explanation": "Facebook tracking services enable cross-site advertising and user profiling.",
+    "action": "Block"
+  },
+  "connect.facebook.net": {
+    "category": "Advertising",
+    "risk": "HIGH",
+    "explanation": "Facebook Pixel tracks users across sites for ad targeting.",
+    "action": "Block"
+  },
+  "amazon-adsystem.com": {
+    "category": "Advertising",
+    "risk": "HIGH",
+    "explanation": "Amazon Ad System delivers personalized advertisements using tracking data.",
+    "action": "Block"
+  },
+  "chartbeat.com": {
+    "category": "Analytics",
+    "risk": "MEDIUM",
+    "explanation": "Chartbeat provides real-time analytics on user engagement.",
+    "action": "Ask User"
+  },
+  "optimizely.com": {
+    "category": "Analytics",
+    "risk": "MEDIUM",
+    "explanation": "Optimizely runs experiments and tracks user behavior for A/B testing.",
+    "action": "Ask User"
+  },
+  "cdn.optimizely.com": {
+    "category": "Analytics",
+    "risk": "MEDIUM",
+    "explanation": "Optimizely content delivery used for experimentation and analytics.",
+    "action": "Ask User"
+  },
+  "piano.io": {
+    "category": "Analytics",
+    "risk": "MEDIUM",
+    "explanation": "Piano tracks user engagement and subscription behavior.",
+    "action": "Ask User"
+  },
+  "experience.piano.io": {
+    "category": "Analytics",
+    "risk": "MEDIUM",
+    "explanation": "Piano Experience is used for audience analytics and personalization.",
+    "action": "Ask User"
+  }
 }
