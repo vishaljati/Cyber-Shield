@@ -4,61 +4,64 @@ import {
   generateExplanation,
   getFallbackExplanation,
 } from '../services/ai.service.js';
-import {  mapRiskToAction } from '../utils/index.js';
+import { mapRiskToAction } from '../utils/index.js';
 
-/**
- * Controller: Analyze Tracker
- * Route: POST /analyze-tracker
- */
+
 const analyzeTracker = AsyncHandler(async (req, res) => {
   try {
-    const { trackerDomain , pageDomain , signals } = req.body;
+    const { trackerDomain, pageDomain, signals } = req.body;
 
-    // 1️⃣ Basic input validation (minimal, MVP-safe)
     if (!trackerDomain || !pageDomain || !Array.isArray(signals)) {
       throw new ApiError(403, 'Inputs not found');
     }
 
-    // 2️⃣ Rule-based classification (NO AI here)
     const classificationResult = classifierService({
       trackerDomain,
       pageDomain,
       signals,
     });
+    if (!classificationResult) {
+      throw new ApiError(500, "Classification failed");
 
-    const { category, risk } = classificationResult;
+    }
+    const category = classificationResult.category
+    if (classificationResult.explanation === "") {
+      try {
+        const explanation = await generateExplanation({
+          trackerDomain,
+          category,
+          signals,
+        })
+        if (!explanation) {
+          throw new ApiError(500, "Generating explanation failed");
 
-    // 3️⃣ AI explanation (explanation ONLY)
-    let explanation;
-    try {
-      explanation = await generateExplanation({
-        trackerDomain,
-        category,
-        signals,
-      })
-      console.log(explanation);
-      if (!explanation) {
-        throw new ApiError(500,"Generating explanation failed");
-        
+        }
+        classificationResult.explanation = explanation;
+
+      } catch (error) {
+        console.error('AI explanation error:', error);
+        explanation = getFallbackExplanation(category);
       }
-    } catch (aiError) {
-      // Fallback explanation if AI fails
-      explanation = getFallbackExplanation(category);
     }
 
-    // 4️⃣ Decide recommended action
-    const action = mapRiskToAction(risk);
+    const isBlocked = false;
+    const isAllowedbyUser = false;
 
-    // 5️⃣ FINAL RESPONSE (LOCK THIS FORMAT)
+    if (classificationResult.action === "") {
+      classificationResult.action = mapRiskToAction(classificationResult.risk);
+    }
+
     return res.status(200).json(
       new ApiResponse(
         200,
         {
           tracker: trackerDomain,
-          category,
-          risk,
-          explanation,
-          action,
+          category: classificationResult.category,
+          risk: classificationResult.risk,
+          explanation: classificationResult.explanation,
+          action: classificationResult.action,
+          isBlocked,
+          isAllowedbyUser
         },
         'Tracker tracked successfully'
       )
