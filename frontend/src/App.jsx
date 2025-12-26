@@ -2,26 +2,36 @@ import { useEffect, useState } from "react";
 
 export default function App() {
   const [trackers, setTrackers] = useState([]);
+  
+  const loadTrackers = () => {
+    chrome.storage.local.get(null, (data) => {
+      const trackerList = Object.entries(data)
+        .filter(([key, value]) => key.startsWith("tracker_") && value && value.message.isBlocked === false)
+        .map(([_, value]) => {
+          const payload = value.message
+          return {
+            tracker: payload.tracker || "Unknown domain",
+            category: payload.category || "Unknown",
+            risk: payload.risk || "UNKNOWN",
+            explanation: payload.explanation || "No explanation available.",
+            action: payload.action || "Ask User",
+            isBlocked: payload.isBlocked || false,
+            isAllowedbyUser: payload.isAllowedbyUser || false
+
+          };
+        });
+
+      setTrackers(trackerList);
+    });
+  };
 
   useEffect(() => {
-
-    chrome.runtime.sendMessage(
-      { type: "GET_TRACKERS" },
-      (response) => {
-        if (response && response.trackers) {
-
-          const formatted = response.trackers.map((domain) => ({
-            tracker: domain,
-            category: "Unknown",
-            risk: "MEDIUM",
-            explanation: "Tracker detected on this website.",
-            action: "Block"
-          }));
-
-          setTrackers(formatted);
-        }
-      }
-    );
+    loadTrackers();
+    // Live updates when background writes to storage
+    chrome.storage.onChanged.addListener(loadTrackers);
+    return () => {
+      chrome.storage.onChanged.removeListener(loadTrackers);
+    };
   }, []);
 
 
@@ -34,16 +44,26 @@ export default function App() {
         type: "BLOCK_DOMAIN",
         domain
       },
-      () => {
+      (response) => {
 
-        setTrackers((prev) =>
-          prev.filter((t) => t.tracker !== domain)
-        );
+        if (response.success || response) {
+          setTrackers((prev) =>
+            prev.filter((t) => t.tracker !== domain)
+          );
+        }
       }
     );
   };
 
+  const unblockTracker = (domain) => {
+    if (!chrome?.runtime) return;
+    chrome.runtime.sendMessage({
+      type: "UNBLOCK_TRACKER",
+      domain
+    },
 
+    );
+  };
 
   const riskStyles = {
     HIGH: {
@@ -63,12 +83,15 @@ export default function App() {
     }
   };
 
+
   return (
-    <div className="w-full min-h-[400px] bg-gray-950 text-white p-4">
+    <div className="w-full min-h-100 bg-gray-950 text-white p-4">
 
       <div className="flex items-center gap-2">
         <span className="text-xl">🛡</span>
-        <h1 className="text-xl font-bold">CyberShield</h1>
+        <h1 className="text-xl font-bold text-blue-400 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)] tracking-tight">
+          CyberShield
+        </h1>
       </div>
 
       <p className="text-sm text-gray-400 mt-1">
@@ -91,7 +114,7 @@ export default function App() {
               className={`rounded-lg border p-3 ${style.bg} ${style.border}`}
             >
               <div className="flex justify-between items-center">
-                <span className="font-medium">{t.tracker}</span>
+                <span className="font-medium truncate">Tracker Domain :{t.tracker}</span>
                 <span className={`text-xs font-semibold ${style.text}`}>
                   {t.risk}
                 </span>
@@ -108,15 +131,23 @@ export default function App() {
               <div className="flex gap-2 mt-3">
                 <button
                   onClick={() => blockTracker(t.tracker)}
-                  className="flex-1 rounded bg-red-600 py-1 text-sm hover:bg-red-700"
+                  className="flex-1 rounded bg-red-700 py-1 text-sm hover:bg-red-700"
                 >
                   Block
                 </button>
 
 
-                <button className="flex-1 rounded bg-gray-700 py-1 text-sm hover:bg-gray-600">
-                  Allow once
-                </button>
+                {t.isAllowedbyUser && !t.isBlocked ? (
+                  <button
+                    className="flex-1 rounded  bg-green-900 py-1 text-sm hover:bg-green-700">
+                    Allowed
+                  </button>) : (
+                  <button
+                    onClick={() => unblockTracker(t.tracker)}
+                    className="flex-1 rounded bg-gray-700 py-1 text-sm hover:bg-gray-600">
+                    Allow Once
+                  </button>
+                )}
               </div>
             </div>
           );
@@ -129,6 +160,4 @@ export default function App() {
       </div>
     </div>
   );
-} 
-
-
+}
