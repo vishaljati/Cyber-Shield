@@ -1,139 +1,144 @@
-console.log("CyberShield content script injected");
-
-
-const pageDomain = window.location.hostname;
-
-
-const scripts = Array.from(document.querySelectorAll("script[src]"));
-
-const trackers = scripts
-  .map((script) => {
-    try {
-      const url = new URL(script.src);
-      return url.hostname;
-    } catch {
-      return null;
-    }
-  })
-  .filter(
-    (domain) =>
-      domain &&
-      domain !== pageDomain &&
-      !domain.endsWith(pageDomain)
-  );
-
-
-const uniqueTrackers = [...new Set(trackers)];
-
-if (uniqueTrackers.length > 0) {
-  chrome.runtime.sendMessage({
-    type: "TRACKERS_FOUND",
-    trackers: uniqueTrackers,
-    pageDomain
-  });
-}
-
-
-
-/**
- * ============================
- * CONTENT SCRIPT
- * ============================
- * Responsibility:
- * - Observe page-level tracking behavior
- * - Generate privacy-safe signals
- * - Send data to background script
- *
- * NO backend calls
- * NO blocking
- * NO storage
- */
-
-/*
-; (function () {
+(() => {
   try {
+   
     const pageDomain = window.location.hostname;
     const trackers = new Set();
     const signals = new Set();
+    let messageSent = false;
 
-    const isThirdParty = (host) =>
-      !host.endsWith(pageDomain) && !pageDomain.endsWith(host);
+    const isThirdParty = (host) => !host.endsWith(pageDomain) && !pageDomain.endsWith(host);;
 
-    // External scripts
-    document.querySelectorAll("script[src]").forEach((script) => {
-      try {
-        const url = new URL(script.src);
+    const addTracker = (host, extraSignals = []) => {
+      if (!host) return;
+      trackers.add(host);
+      extraSignals.forEach((s) => signals.add(s));
+    };
 
-        if (isThirdParty(url.hostname)) {
-          trackers.add(url.hostname);
-          signals.add("third-party");
-        }
 
-        if (
-          url.hostname.includes("analytics") ||
-          url.hostname.includes("googletag") ||
-          url.hostname.includes("clarity") ||
-          url.hostname.includes("hotjar")
-        ) {
-          signals.add("analytics");
-        }
-      } catch {
-        // ignore invalid script URL
-      }
-    });
-
-    // Tracking pixels & tiny images
-    document.querySelectorAll("img").forEach((img) => {
-      try {
-        const width = img.width || img.naturalWidth || 0;
-        const height = img.height || img.naturalHeight || 0;
-        const style = window.getComputedStyle(img);
-
-        const isTiny = width <= 1 && height <= 1;
-        const isHidden = style.display === "none" || style.visibility === "hidden";
-
-        if ((isTiny || isHidden) && img.src) {
-          try {
-            const url = new URL(img.src, location.href);
-            trackers.add(url.hostname);
-            signals.add("pixel");
-            if (isThirdParty(url.hostname)) {
-              signals.add("third-party");
-            }
-          } catch {
-            // ignore bad URLs
+    //Scan existing DOM (after load)
+    const scanStaticDOM = () => {
+      // External scripts
+      document.querySelectorAll("script[src]").forEach((script) => {
+        try {
+          const url = new URL(script.src);
+          if (isThirdParty(url.hostname)) {
+            addTracker(url.hostname, ["third-party"]);
           }
-        }
-      } catch {
-        // safely ignore unexpected element errors
-      }
-    });
 
-    // Iframes with src can also be trackers
-    document.querySelectorAll("iframe[src]").forEach((frame) => {
-      try {
-        const url = new URL(frame.src, location.href);
-        if (isThirdParty(url.hostname)) {
-          trackers.add(url.hostname);
-          signals.add("third-party");
-        }
-      } catch {
-        // ignore invalid urls
-      }
-    });
+          if (
+            url.hostname.includes("analytics") ||
+            url.hostname.includes("googletag") ||
+            url.hostname.includes("clarity") ||
+            url.hostname.includes("hotjar")
+          ) {
+            signals.add("analytics");
+          }
+        } catch (_) {}
+      });
 
-    if (trackers.size > 0) {
+      // Tracking pixels (1x1 or invisible images)
+      document.querySelectorAll("img[src]").forEach((img) => {
+        try {
+          const w = img.naturalWidth || img.width;
+          const h = img.naturalHeight || img.height;
+
+          if (w <= 1 && h <= 1) {
+            const url = new URL(img.src);
+            addTracker(url.hostname, ["pixel"]);
+            if (isThirdParty(url.hostname)) signals.add("third-party");
+          }
+        } catch (_) {}
+      });
+
+      // Iframes
+      document.querySelectorAll("iframe[src]").forEach((iframe) => {
+        try {
+          const url = new URL(iframe.src);
+          if (isThirdParty(url.hostname)) {
+            addTracker(url.hostname, ["third-party", "iframe"]);
+          }
+        } catch (_) {}
+      });
+    };
+
+
+     //Send data ONCE to background
+    const sendOnce = () => {
+      if (messageSent) return;
+      if (trackers.size === 0) return;
+
+      messageSent = true;
       chrome.runtime.sendMessage({
         type: "TRACKERS_DETECTED",
         payload: {
-          pageDomain,
           trackers: Array.from(trackers),
+          pageDomain,
           signals: Array.from(signals)
         }
       });
-    }
-  } catch (error) {
-    console.warn("CyberShield content script error:", error);
+    };
+
+
+    //Delay initial scan (critical)
+    setTimeout(() => {
+      scanStaticDOM();
+      sendOnce();
+    }, 4000); 
+
+
+     //Observe dynamic injections
+       
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (!node || node.nodeType !== Node.ELEMENT_NODE) return;
+
+          // Direct script injection
+          if (node.tagName === "SCRIPT" && node.src) {
+            try {
+              const url = new URL(node.src);
+              if (isThirdParty(url.hostname)) {
+                addTracker(url.hostname, ["third-party"]);
+              }
+            } catch (_) {}
+          }
+
+          // Direct iframe injection
+          if (node.tagName === "IFRAME" && node.src) {
+            try {
+              const url = new URL(node.src);
+              if (isThirdParty(url.hostname)) {
+                addTracker(url.hostname, ["third-party", "iframe"]);
+              }
+            } catch (_) {}
+          }
+
+          // Nested scripts (GTM-style injections)
+          if (node.querySelectorAll) {
+            node.querySelectorAll("script[src]").forEach((s) => {
+              try {
+                const url = new URL(s.src);
+                if (isThirdParty(url.hostname)) {
+                  addTracker(url.hostname, ["third-party"]);
+                }
+              } catch (_) {}
+            });
+          }
+        });
+      });
+
+      // Debounced send after dynamic changes
+      clearTimeout(observer._timer);
+      observer._timer = setTimeout(sendOnce, 1000);
+    });
+
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true
+    });
+  } catch (err) {
+    console.warn("CyberShield content script error:", err);
   }
 })();
-*/
+
+
