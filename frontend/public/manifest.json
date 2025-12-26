@@ -1,29 +1,35 @@
 {
   "manifest_version": 3,
   "name": "CyberShield",
-  "version": "1.0",
-  "description": "Detects and explains hidden trackers",
+  "version": "1.0.0",
+  "description": "Detects, explains, and blocks hidden web trackers",
+
   "action": {
-    "default_popup": "index.html"
+    "default_popup": "index.html",
+    "default_title": "CyberShield"
   },
-  "permissions": [
-    "activeTab",
-    "storage",
-    "cookies",
-    
-    "declarativeNetRequest"
-    
-  ],
-  "host_permissions": [
-    "<all_urls>"
-  ],
+
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
+
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "js": ["content.js"],
+      "run_at": "document_idle"
     }
+  ],
+
+  "permissions": [
+    "storage",
+    "cookies",
+    "declarativeNetRequest"
+  ],
+
+  "host_permissions": [
+    "<all_urls>",
+    "http://localhost:3000/*"
   ]
 }
