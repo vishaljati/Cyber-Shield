@@ -1,24 +1,7 @@
 import { generateText } from "../config/gemini.config.js"
 
-//Build a strict prompt to avoid hallucinations
-const buildPrompt = ({ trackerDomain, category, signals }) => {
-  return `
-   You are a cybersecurity assistant.
-   Explain what the tracker "${trackerDomain}" does.
-   Category: ${category}
-   Observed behavior signals: ${signals.join(", ")}
-   Rules:
-   - Use simple, non-technical language
-   - Max 2 sentences
-   - Do NOT speculate
-   - Do NOT mention AI
-   - Do NOT mention user data
-   - Do NOT exaggerate risk
-   Explain only the likely purpose of this tracker.
-`;
-}
 
-//Ensure explanation is safe & short
+
 const sanitizeExplanation = (text) => {
   return text
     .replace(/\n/g, " ")
@@ -28,10 +11,25 @@ const sanitizeExplanation = (text) => {
 }
 
 export const generateExplanation = async ({ trackerDomain, category, signals }) => {
-  const prompt = buildPrompt(trackerDomain, category, signals);
-
+  const prompt = `You are a cybersecurity assistant.
+   Explain what the tracker "${trackerDomain}" does.
+   Category: ${category}
+   Observed behavior signals: ${signals.join(", ")}
+   Rules:
+   - Use simple, non-technical language 
+   -Explain properly and clearly
+   -Within 1 sentence in 15 words
+   - Do NOT speculate
+   - Do NOT mention AI
+   - Do NOT mention user data
+   - Do NOT exaggerate risk
+   Explain only the likely purpose of this tracker.
+`
   const geminiText = await generateText(prompt)
-  console.log("aiService ",geminiText);
+  if (!geminiText) {
+    throw new Error("GEMINI TEXT GENERATION FAILED");
+
+  }
 
   return sanitizeExplanation(geminiText)
 
