@@ -1,8 +1,7 @@
 import { Router } from 'express';
-import {analyzeTracker} from '../controllers/analyze.controllers.js';
+import { analyzeTracker } from '../controllers/analyze.controllers.js';
 
 /**
- * POST /analyze-tracker
  * Purpose:
  * - Accept tracker metadata from extension
  * - Forward request to controller
