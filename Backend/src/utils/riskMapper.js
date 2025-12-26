@@ -1,7 +1,3 @@
-/**
- * Map risk level to recommended user action
- * This logic MUST stay simple and predictable
- */
 
 export const mapRiskToAction = (risk) => {
     switch (risk) {
@@ -15,7 +11,6 @@ export const mapRiskToAction = (risk) => {
             return "Allow";
 
         default:
-            // Safety fallback (never block by mistake)
             return "Ask User";
     }
 }
