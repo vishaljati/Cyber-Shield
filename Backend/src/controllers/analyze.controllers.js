@@ -6,7 +6,6 @@ import {
 } from '../services/ai.service.js';
 import { mapRiskToAction } from '../utils/index.js';
 
-
 const analyzeTracker = AsyncHandler(async (req, res) => {
   try {
     const { trackerDomain, pageDomain, signals } = req.body;
@@ -21,23 +20,20 @@ const analyzeTracker = AsyncHandler(async (req, res) => {
       signals,
     });
     if (!classificationResult) {
-      throw new ApiError(500, "Classification failed");
-
+      throw new ApiError(500, 'Classification failed');
     }
-    const category = classificationResult.category
-    if (classificationResult.explanation === "") {
+    const category = classificationResult.category;
+    if (classificationResult.explanation === '') {
       try {
         const explanation = await generateExplanation({
           trackerDomain,
           category,
           signals,
-        })
+        });
         if (!explanation) {
-          throw new ApiError(500, "Generating explanation failed");
-
+          throw new ApiError(500, 'Generating explanation failed');
         }
         classificationResult.explanation = explanation;
-
       } catch (error) {
         console.error('AI explanation error:', error);
         explanation = getFallbackExplanation(category);
@@ -47,7 +43,7 @@ const analyzeTracker = AsyncHandler(async (req, res) => {
     const isBlocked = false;
     const isAllowedbyUser = false;
 
-    if (classificationResult.action === "") {
+    if (classificationResult.action === '') {
       classificationResult.action = mapRiskToAction(classificationResult.risk);
     }
 
@@ -61,7 +57,7 @@ const analyzeTracker = AsyncHandler(async (req, res) => {
           explanation: classificationResult.explanation,
           action: classificationResult.action,
           isBlocked,
-          isAllowedbyUser
+          isAllowedbyUser,
         },
         'Tracker tracked successfully'
       )
