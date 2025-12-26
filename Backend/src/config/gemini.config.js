@@ -9,18 +9,16 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 
 export const generateText=async(prompt)=> {
-  if (!prompt) throw new Error("Prompt is required");
 
-  const model = genAI.getGenerativeModel({
-    model:"gemini-2.5-flash-lite"
-  });
+  if (!prompt) throw new ApiError(500,"Prompt is missing");
 
+  const model = genAI.getGenerativeModel({model:"gemini-2.5-flash-lite"});
   const result = await model.generateContent(prompt);
-  if (!result) {
+  const text = result.response.text();
+  if (!text) {
     throw new ApiError(500,"Geimini Error to generate text");
     
   }
-  const response = result?.response || null
-
-  return response.text();
+ 
+  return text;
 }
