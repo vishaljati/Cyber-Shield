@@ -1,32 +1,35 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import mongoose from 'mongoose';
+import { Tracker } from '../models/tracker.models.js'
+import { generateExplanation, getFallbackExplanation } from '../services/ai.service.js';
+import { ApiError, mapRiskToAction } from '../utils/index.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
-const knownTrackers = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '../data/knownTrackers.json'), 'utf-8')
-);
-
-const classifierService = ({ trackerDomain, pageDomain, signals }) => {
+const classifierService = async ({ trackerDomain, pageDomain, signals }) => {
   const domain = trackerDomain.toLowerCase();
   const signalSet = new Set(signals);
+  const knownTracker = await Tracker.findOne({ tracker: trackerDomain })
 
-  let category = '';
-  let action = '';
-  let risk = '';
-  let explanation = '';
+  let category = ''
+  let action = ''
+  let risk = ''
+  let explanation = ''
 
-  if (knownTrackers[domain]) {
-    const known = knownTrackers[domain];
+  if (knownTracker) {
+    console.log("It is a KNOWN TRACKER");
+
+    category = knownTracker.category
+    risk = knownTracker.risk
+    explanation = knownTracker.explanation
+    action = knownTracker.action
+
     return {
-      category: known.category,
-      risk: known.risk,
-      explanation: known.explanation,
-      action: known.action,
+      category,
+      risk,
+      explanation,
+      action,
     };
   }
+
   if (domain.includes(pageDomain)) {
     return {
       category: 'Necessary',
@@ -44,8 +47,8 @@ const classifierService = ({ trackerDomain, pageDomain, signals }) => {
     category = 'Advertising';
     risk = 'HIGH';
     action = 'Block';
+
   } else if (
-    knownTrackers.analytics.includes(trackerDomain) ||
     signals.includes('analytics')
   ) {
     category = 'Analytics';
@@ -56,6 +59,49 @@ const classifierService = ({ trackerDomain, pageDomain, signals }) => {
   } else if (signalSet.has('iframe')) {
     category = 'Suspicious';
     risk = 'MEDIUM';
+  } else {
+    category = 'Unknown';
+    risk = 'MEDIUM';
+  }
+
+  if (explanation === '') {
+    try {
+      explanation = await generateExplanation({
+        trackerDomain,
+        category,
+        signals,
+      });
+      if (!explanation) {
+        console.log("GEMINI GENERATION FAILED");
+        throw new ApiError(500,"GEMINI GENERATION FAILED");
+        
+      }
+    } catch (error) {
+       explanation = getFallbackExplanation(category);
+       console.log("AI ERROR : ",error);
+       
+    }
+   
+  }
+
+  if (!explanation || !explanation.trim()) {
+    throw new ApiError(500,"Explanation is required before saving tracker");
+  }
+
+  if (action === '') {
+    action = mapRiskToAction(risk);
+  }
+
+  const newTracker = await Tracker.create({
+    tracker: trackerDomain,
+    category: category,
+    risk: risk,
+    explanation: explanation,
+    action: action
+  });
+  if (!newTracker) {
+    throw new Error("Insertion of tracker details in db failed");
+
   }
 
   return {
