@@ -10,13 +10,12 @@ connectDB()
   .then(() => {
     app.listen(port, (err) => {
       if (err) {
-        console.error("Error starting server:", err);
+        console.error('Error starting server:', err);
       } else {
         console.log(`Server started at: http://localhost:${port}`);
       }
     });
-
   })
   .catch((error) => {
-    console.log("MongoDB Connection failed !!", error);
+    console.log('MongoDB Connection failed !!', error);
   });

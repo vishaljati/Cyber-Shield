@@ -1,1 +1,1 @@
- export const DB_NAME="cyber-shield"
+export const DB_NAME = 'cyber-shield';

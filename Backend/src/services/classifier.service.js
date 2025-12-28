@@ -1,26 +1,28 @@
 import mongoose from 'mongoose';
-import { Tracker } from '../models/tracker.models.js'
-import { generateExplanation, getFallbackExplanation } from '../services/ai.service.js';
+import { Tracker } from '../models/tracker.models.js';
+import {
+  generateExplanation,
+  getFallbackExplanation,
+} from '../services/ai.service.js';
 import { ApiError, mapRiskToAction } from '../utils/index.js';
-
 
 const classifierService = async ({ trackerDomain, pageDomain, signals }) => {
   const domain = trackerDomain.toLowerCase();
   const signalSet = new Set(signals);
-  const knownTracker = await Tracker.findOne({ tracker: trackerDomain })
+  const knownTracker = await Tracker.findOne({ tracker: trackerDomain });
 
-  let category = ''
-  let action = ''
-  let risk = ''
-  let explanation = ''
+  let category = '';
+  let action = '';
+  let risk = '';
+  let explanation = '';
 
   if (knownTracker) {
-    console.log("It is a KNOWN TRACKER");
+    console.log('It is a KNOWN TRACKER');
 
-    category = knownTracker.category
-    risk = knownTracker.risk
-    explanation = knownTracker.explanation
-    action = knownTracker.action
+    category = knownTracker.category;
+    risk = knownTracker.risk;
+    explanation = knownTracker.explanation;
+    action = knownTracker.action;
 
     return {
       category,
@@ -47,10 +49,7 @@ const classifierService = async ({ trackerDomain, pageDomain, signals }) => {
     category = 'Advertising';
     risk = 'HIGH';
     action = 'Block';
-
-  } else if (
-    signals.includes('analytics')
-  ) {
+  } else if (signals.includes('analytics')) {
     category = 'Analytics';
     risk = 'MEDIUM';
   } else if (signalSet.has('analytics')) {
@@ -72,20 +71,17 @@ const classifierService = async ({ trackerDomain, pageDomain, signals }) => {
         signals,
       });
       if (!explanation) {
-        console.log("GEMINI GENERATION FAILED");
-        throw new ApiError(500,"GEMINI GENERATION FAILED");
-        
+        console.log('GEMINI GENERATION FAILED');
+        throw new ApiError(500, 'GEMINI GENERATION FAILED');
       }
     } catch (error) {
-       explanation = getFallbackExplanation(category);
-       console.log("AI ERROR : ",error);
-       
+      explanation = getFallbackExplanation(category);
+      console.log('AI ERROR : ', error);
     }
-   
   }
 
   if (!explanation || !explanation.trim()) {
-    throw new ApiError(500,"Explanation is required before saving tracker");
+    throw new ApiError(500, 'Explanation is required before saving tracker');
   }
 
   if (action === '') {
@@ -97,11 +93,10 @@ const classifierService = async ({ trackerDomain, pageDomain, signals }) => {
     category: category,
     risk: risk,
     explanation: explanation,
-    action: action
+    action: action,
   });
   if (!newTracker) {
-    throw new Error("Insertion of tracker details in db failed");
-
+    throw new Error('Insertion of tracker details in db failed');
   }
 
   return {

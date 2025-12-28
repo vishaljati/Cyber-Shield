@@ -9,7 +9,7 @@ const analyzeTracker = AsyncHandler(async (req, res) => {
       throw new ApiError(403, 'Inputs not found');
     }
 
-    const classificationResult =await classifierService({
+    const classificationResult = await classifierService({
       trackerDomain,
       pageDomain,
       signals,
@@ -17,7 +17,7 @@ const analyzeTracker = AsyncHandler(async (req, res) => {
     if (!classificationResult) {
       throw new ApiError(500, 'Classification failed !');
     }
-  
+
     return res.status(200).json(
       new ApiResponse(
         200,
@@ -27,8 +27,8 @@ const analyzeTracker = AsyncHandler(async (req, res) => {
           risk: classificationResult.risk,
           explanation: classificationResult.explanation,
           action: classificationResult.action,
-          isBlocked:false,
-          isAllowedbyUser:false,
+          isBlocked: false,
+          isAllowedbyUser: false,
         },
         'Tracker tracked successfully'
       )

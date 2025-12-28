@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import { DB_NAME } from "../constant.js";
+import mongoose from 'mongoose';
+import { DB_NAME } from '../constant.js';
 
 const connectDB = async () => {
   try {
@@ -8,11 +8,11 @@ const connectDB = async () => {
     );
 
     console.log(
-      "\n MONGODB Connected Successfully!! \n DB HOST :",
+      '\n MONGODB Connected Successfully!! \n DB HOST :',
       `${connectionInstant.connection.host}`
     );
   } catch (error) {
-    console.log("MONGODB CONNECTION FAILED :", error);
+    console.log('MONGODB CONNECTION FAILED :', error);
     process.exit(1);
   }
 };
