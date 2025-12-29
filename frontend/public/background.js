@@ -73,7 +73,7 @@ async function enrichSignals(trackerDomain, baseSignals) {
 
 async function sendToBackend({ trackerDomain, pageDomain, signals }) {
   try {
-    const res = await fetch("http://localhost:3000/api/v1/analyze/analyze-tracker", {
+    const res = await fetch("https://cyber-shield-hy10.onrender.com/api/v1/analyze/analyze-tracker", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ trackerDomain, pageDomain, signals })
