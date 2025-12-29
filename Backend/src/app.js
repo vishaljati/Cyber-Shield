@@ -16,7 +16,9 @@ app.use(express.urlencoded({ extended: true, limit: '16kb' }));
 app.use(express.static('public'));
 
 import analyzeRouter from './routes/analyze.routes.js';
+import healthRouter from "./routes/healthcheck.routes.js"
 
 app.use('/api/v1/analyze', analyzeRouter);
+app.use("/api/v1/healthcheck",healthRouter)
 
 export default app;
